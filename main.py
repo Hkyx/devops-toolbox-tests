@@ -13,7 +13,7 @@ def decore_json(domain_name):
 async def root():
     return {"message": "paths are /http or https + /domainName.y"}
 
-@app.get("/testquery/-/{uri:path}")
+@app.get("/testquery/{uri:path}")
 def read_unit(uri: str):
     """[test a url to get a json return (serve to test service mesh) don't forget to
     add testquery/-/myhttpUri://uri.com]
