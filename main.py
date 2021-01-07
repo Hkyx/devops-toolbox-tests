@@ -5,10 +5,6 @@ import json
 
 app = FastAPI()
 
-def decore_json(domain_name):
-    r = requests.get(domain_name, stream=True)
-    return(r.json())
-
 @app.get("/")
 async def root():
     return {"message": "paths are /http or https + /domainName.y"}
@@ -20,8 +16,8 @@ def read_unit(uri: str):
 
     Args:
         uri (str): [http://uri.com]
-
     Returns:
         [json]: [return a json from the requested uri]
     """    
-    return decore_json(uri)    
+    r = requests.get(uri, stream=True)
+    return(r.json())    
