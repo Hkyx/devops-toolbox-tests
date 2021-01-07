@@ -5,22 +5,23 @@ import json
 
 app = FastAPI()
 
-def decoreJson(protocol, domainName):
-    r_path = "{}://{}".format(protocol, domainName)
-    r = requests.get(r_path, stream=True)
-    r_dict = r.body()   
-    for line in r_dict.iter_lines():
-        r_dict = line.decode('utf-8')
-        print(json.loads(r_dict))
-        return json.loads(r_dict)
-    pass
+def decore_json(domain_name):
+    r = requests.get(domain_name, stream=True)
+    return(r.json())
 
 @app.get("/")
 async def root():
     return {"message": "paths are /http or https + /domainName.y"}
 
-@app.get("/{protocol}/{domain}")
-async def vf_http(domain: str, protocol: str):
-    print(protocol)
-    print(domain)
-    return decoreJson(protocol, domain)
+@app.get("/testquery/-/{uri:path}")
+def read_unit(uri: str):
+    """[test a url to get a json return (serve to test service mesh) don't forget to
+    add testquery/-/myhttpUri://uri.com]
+
+    Args:
+        uri (str): [http://uri.com]
+
+    Returns:
+        [json]: [return a json from the requested uri]
+    """    
+    return decore_json(uri)    
