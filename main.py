@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 import requests
-import json 
+import json
 
 
 app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "paths are /http or https + /domainName.y"}
+    return {"message": "paths are /testquery/http://domain_name.y"}
 
 @app.get("/testquery/{uri:path}")
 def read_unit(uri: str):
@@ -18,6 +18,6 @@ def read_unit(uri: str):
         uri (str): [http://uri.com]
     Returns:
         [json]: [return a json from the requested uri]
-    """    
+    """
     r = requests.get(uri, stream=True)
-    return(r.json())    
+    return(r.json())
