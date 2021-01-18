@@ -1,0 +1,89 @@
+---
+# Source: auditing/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dfetools
+  namespace: default
+---
+# Source: auditing/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dfetools
+  namespace: default
+rules:
+  - apiGroups: ['']
+    resources: ['secrets']
+    verbs: ["get", "patch", "create", "update"]
+---
+# Source: auditing/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dfetools
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dfetools
+subjects:
+  - kind: ServiceAccount
+    name: dfetools
+---
+# Source: auditing/templates/deploiement.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dfetools
+  labels:
+    app: dfetools
+    deployed: "dfetools-6.4.2.638"
+  namespace: default
+spec:
+  selector:
+    app: dfetools
+  ports:
+    - name: dfetools
+      protocol: TCP
+      port: 3000
+      targetPort: 80
+  type: ClusterIP
+---
+# Source: auditing/templates/deploiement.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dfetools
+  labels:
+    app: dfetools
+    deployed: "dfetools-6.4.2.638"
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dfetools
+  template:
+    metadata:
+      name: dfetools
+      labels:
+        app: dfetools
+        deployed: "dfetools-6.4.2.638"
+        environment: dev
+      annotations:
+        consul.hashicorp.com/connect-inject: "true"
+        consul.hashicorp.com/service-name: "dfetools"
+        consul.hashicorp.com/connect-service-port: "3000"
+        consul.hashicorp.com/connect-service-upstreams: "readingSecrets-rs-PythonRulez:8001"
+    spec:
+      serviceAccountName: "dfetools"
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: dfetools
+          image: adrienbarret/dfetools:latest
+          imagePullPolicy: Always
+          ports:
+            - name: dfetools
+              containerPort: 80
