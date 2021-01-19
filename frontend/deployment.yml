@@ -87,3 +87,11 @@ spec:
           ports:
             - name: dfetools
               containerPort: 80
+---
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name:  frontend-dfetools
+spec:
+  prefix: /dfetools/
+  service: dfetools.default:3000
